@@ -16,6 +16,9 @@ windows/
 linux/
 web/
 
+# Firebase
+.firebase/
+
 # IDE
 .idea/
 .vscode/
