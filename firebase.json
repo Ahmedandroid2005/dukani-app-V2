@@ -1,0 +1,16 @@
+{
+  "hosting": {
+    "site": "dukani-v2-preview",
+    "public": "build/web",
+    "ignore": ["firebase.json", "**/.*"],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  }
+}
