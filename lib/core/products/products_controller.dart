@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/mock/mock_models.dart';
-import '../auth/auth_controller.dart';
+import '../organizations/org_controller.dart';
 import '../offline/firestore_synced_list_notifier.dart';
 import '../offline/local_db.dart';
 
@@ -11,13 +11,13 @@ import '../offline/local_db.dart';
 /// from this single provider so an edit made here is immediately reflected
 /// everywhere else.
 class ProductsController extends FirestoreSyncedListNotifier<MockProduct> {
-  ProductsController(String? ownerUid)
+  ProductsController(String? orgId)
       : super(
           box: LocalDb.products,
           seed: const [],
           toJson: (p) => p.toJson(),
           fromJson: MockProduct.fromJson,
-          ownerUid: ownerUid,
+          orgId: orgId,
           collectionName: 'products',
         );
 
@@ -136,5 +136,5 @@ class ProductsController extends FirestoreSyncedListNotifier<MockProduct> {
 }
 
 final productsProvider = StateNotifierProvider<ProductsController, List<MockProduct>>(
-  (ref) => ProductsController(ref.watch(authStateProvider).valueOrNull?.uid),
+  (ref) => ProductsController(ref.watch(currentOrgIdProvider).valueOrNull),
 );

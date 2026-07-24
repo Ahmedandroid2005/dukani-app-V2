@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/auth/auth_controller.dart';
 import '../../core/auth/auth_repository.dart';
 import '../../core/offline/settings_controller.dart';
+import '../../core/organizations/org_controller.dart';
 import '../../core/router/app_router.dart';
 import '../../core/session/session_controller.dart';
 import '../../core/store/store_profile.dart';
@@ -47,13 +48,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Future<void> _save() async {
-    final uid = ref.read(authStateProvider).valueOrNull?.uid;
+    final orgId = await ref.read(currentOrgIdProvider.future);
     final current = _profile;
-    if (uid == null || current == null) return;
+    if (orgId == null || current == null) return;
     setState(() => _saving = true);
     try {
       await ref.read(storeRepositoryProvider).save(
-            uid,
+            orgId,
             StoreProfile(
               storeName: current.storeName,
               ownerName: _nameController.text.trim(),

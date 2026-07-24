@@ -7,6 +7,7 @@ import '../../core/auth/auth_controller.dart';
 import '../../core/business/business_type_controller.dart';
 import '../../core/business/country_controller.dart';
 import '../../core/constants/dukani_countries.dart';
+import '../../core/organizations/org_controller.dart';
 import '../../core/store/store_profile.dart';
 import '../../core/store/store_profile_controller.dart';
 import '../../core/theme/dukani_theme.dart';
@@ -63,6 +64,7 @@ class _StoreSetupWizardState extends ConsumerState<StoreSetupWizard> {
       _error = null;
     });
     try {
+      await bootstrapOrgForNewOwner(ref, uid);
       await ref.read(storeRepositoryProvider).save(
             uid,
             StoreProfile(

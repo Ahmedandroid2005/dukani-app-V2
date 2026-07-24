@@ -59,11 +59,11 @@ class StoreProfile {
       );
 }
 
-/// What the rest of the app needs from "does this owner already have a
-/// store set up" — nothing here mentions Firestore, matching the same
-/// dependency-inversion seam [AuthRepository] uses for Firebase Auth.
+/// What the rest of the app needs from "does this organization already
+/// have a store set up" — nothing here mentions Firestore, matching the
+/// same dependency-inversion seam [AuthRepository] uses for Firebase Auth.
 abstract class StoreRepository {
-  Future<StoreProfile?> fetch(String ownerUid);
+  Future<StoreProfile?> fetch(String orgId);
 
-  Future<void> save(String ownerUid, StoreProfile profile);
+  Future<void> save(String orgId, StoreProfile profile);
 }

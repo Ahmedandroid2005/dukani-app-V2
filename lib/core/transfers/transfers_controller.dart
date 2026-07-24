@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../auth/auth_controller.dart';
+import '../organizations/org_controller.dart';
 import '../offline/firestore_synced_list_notifier.dart';
 import '../offline/local_db.dart';
 
@@ -76,8 +76,8 @@ class MockBranchTransfer {
 /// transfer is a paper trail — a log of what moved and when — rather than
 /// something that debits one branch's count and credits another's.
 class TransfersController extends FirestoreSyncedListNotifier<MockBranchTransfer> {
-  TransfersController(String? ownerUid)
-      : super(box: LocalDb.transfers, seed: const [], toJson: (t) => t.toJson(), fromJson: MockBranchTransfer.fromJson, ownerUid: ownerUid, collectionName: 'transfers');
+  TransfersController(String? orgId)
+      : super(box: LocalDb.transfers, seed: const [], toJson: (t) => t.toJson(), fromJson: MockBranchTransfer.fromJson, orgId: orgId, collectionName: 'transfers');
 
   void create(MockBranchTransfer transfer) => state = [transfer, ...state];
 
@@ -87,5 +87,5 @@ class TransfersController extends FirestoreSyncedListNotifier<MockBranchTransfer
 }
 
 final transfersProvider = StateNotifierProvider<TransfersController, List<MockBranchTransfer>>(
-  (ref) => TransfersController(ref.watch(authStateProvider).valueOrNull?.uid),
+  (ref) => TransfersController(ref.watch(currentOrgIdProvider).valueOrNull),
 );

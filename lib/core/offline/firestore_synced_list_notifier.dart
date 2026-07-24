@@ -19,33 +19,33 @@ import 'persisted_list_notifier.dart';
 /// that risk until "pull on launch" is proven to actually be too slow for
 /// how merchants really use this.
 ///
-/// [ownerUid] is nullable so a controller can still be constructed before
-/// login resolves (or for a signed-out preview) — sync is simply skipped
-/// until a real owner is known, exactly like [PersistedListNotifier]
-/// already behaves before any data exists.
+/// [orgId] is nullable so a controller can still be constructed before the
+/// signed-in owner's organization has resolved (or for a signed-out
+/// preview) — sync is simply skipped until a real org is known, exactly
+/// like [PersistedListNotifier] already behaves before any data exists.
 abstract class FirestoreSyncedListNotifier<T> extends PersistedListNotifier<T> {
   FirestoreSyncedListNotifier({
     required super.box,
     required super.seed,
     required super.toJson,
     required super.fromJson,
-    required this.ownerUid,
+    required this.orgId,
     required this.collectionName,
   }) {
     _pullFromCloud();
   }
 
-  final String? ownerUid;
+  final String? orgId;
 
-  /// Which slot under the store's cloud document this list lives in —
-  /// e.g. `'products'`, `'customers'`. Kept distinct per entity so two
+  /// Which slot under the organization's cloud document this list lives
+  /// in — e.g. `'products'`, `'customers'`. Kept distinct per entity so two
   /// controllers never collide on the same document.
   final String collectionName;
 
   DocumentReference<Map<String, dynamic>>? get _doc {
-    final uid = ownerUid;
-    if (uid == null) return null;
-    return FirebaseFirestore.instance.collection('stores').doc(uid).collection('data').doc(collectionName);
+    final org = orgId;
+    if (org == null) return null;
+    return FirebaseFirestore.instance.collection('organizations').doc(org).collection('data').doc(collectionName);
   }
 
   Future<void> _pullFromCloud() async {

@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../auth/auth_controller.dart';
+import '../organizations/org_controller.dart';
 import '../business/business_capabilities.dart';
 import '../business/business_type_controller.dart';
 import '../offline/firestore_synced_list_notifier.dart';
@@ -13,13 +13,13 @@ import '../offline/local_db.dart';
 /// "الكل" (all) is a fixed filter, never a real category, so it's never
 /// stored here.
 class CategoriesController extends FirestoreSyncedListNotifier<String> {
-  CategoriesController(String? ownerUid, BusinessType businessType)
+  CategoriesController(String? orgId, BusinessType businessType)
       : super(
           box: LocalDb.categories,
           seed: businessType.defaultCategories.skip(1).toList(),
           toJson: (c) => {'v': c},
           fromJson: (json) => json['v'] as String,
-          ownerUid: ownerUid,
+          orgId: orgId,
           collectionName: 'categories',
         );
 
@@ -35,5 +35,5 @@ class CategoriesController extends FirestoreSyncedListNotifier<String> {
 }
 
 final categoriesProvider = StateNotifierProvider<CategoriesController, List<String>>(
-  (ref) => CategoriesController(ref.watch(authStateProvider).valueOrNull?.uid, ref.watch(businessTypeProvider)),
+  (ref) => CategoriesController(ref.watch(currentOrgIdProvider).valueOrNull, ref.watch(businessTypeProvider)),
 );

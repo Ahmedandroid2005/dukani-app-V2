@@ -32,7 +32,7 @@ class ConnectedGateway {
 /// functions/src/index.ts) — the mobile app itself never calls a gateway
 /// directly with them.
 abstract class GatewayCredentialsRepository {
-  Future<ConnectedGateway?> fetch(String ownerUid);
-  Future<void> save(String ownerUid, ConnectedGateway gateway);
-  Future<void> delete(String ownerUid);
+  Future<ConnectedGateway?> fetch(String orgId);
+  Future<void> save(String orgId, ConnectedGateway gateway);
+  Future<void> delete(String orgId);
 }

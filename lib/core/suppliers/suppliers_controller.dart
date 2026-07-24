@@ -1,15 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/mock/mock_models.dart';
-import '../auth/auth_controller.dart';
+import '../organizations/org_controller.dart';
 import '../offline/firestore_synced_list_notifier.dart';
 import '../offline/local_db.dart';
 
 /// Mutable supplier directory. Starts empty — every supplier here is one
 /// the merchant actually added, never a demo record.
 class SuppliersController extends FirestoreSyncedListNotifier<MockSupplier> {
-  SuppliersController(String? ownerUid)
-      : super(box: LocalDb.suppliers, seed: const [], toJson: (s) => s.toJson(), fromJson: MockSupplier.fromJson, ownerUid: ownerUid, collectionName: 'suppliers');
+  SuppliersController(String? orgId)
+      : super(box: LocalDb.suppliers, seed: const [], toJson: (s) => s.toJson(), fromJson: MockSupplier.fromJson, orgId: orgId, collectionName: 'suppliers');
 
   void add(MockSupplier supplier) => state = [...state, supplier];
 
@@ -48,5 +48,5 @@ class SuppliersController extends FirestoreSyncedListNotifier<MockSupplier> {
 }
 
 final suppliersProvider = StateNotifierProvider<SuppliersController, List<MockSupplier>>(
-  (ref) => SuppliersController(ref.watch(authStateProvider).valueOrNull?.uid),
+  (ref) => SuppliersController(ref.watch(currentOrgIdProvider).valueOrNull),
 );

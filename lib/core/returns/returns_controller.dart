@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/mock/mock_models.dart';
-import '../auth/auth_controller.dart';
+import '../organizations/org_controller.dart';
 import '../offline/firestore_synced_list_notifier.dart';
 import '../offline/local_db.dart';
 
@@ -53,12 +53,12 @@ class MockReturn {
 }
 
 class ReturnsController extends FirestoreSyncedListNotifier<MockReturn> {
-  ReturnsController(String? ownerUid)
-      : super(box: LocalDb.returns, seed: const [], toJson: (r) => r.toJson(), fromJson: MockReturn.fromJson, ownerUid: ownerUid, collectionName: 'returns');
+  ReturnsController(String? orgId)
+      : super(box: LocalDb.returns, seed: const [], toJson: (r) => r.toJson(), fromJson: MockReturn.fromJson, orgId: orgId, collectionName: 'returns');
 
   void create(MockReturn ret) => state = [ret, ...state];
 }
 
 final returnsProvider = StateNotifierProvider<ReturnsController, List<MockReturn>>(
-  (ref) => ReturnsController(ref.watch(authStateProvider).valueOrNull?.uid),
+  (ref) => ReturnsController(ref.watch(currentOrgIdProvider).valueOrNull),
 );

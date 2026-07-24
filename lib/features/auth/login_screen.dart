@@ -7,6 +7,7 @@ import '../../core/auth/auth_repository.dart';
 import '../../core/business/business_type_controller.dart';
 import '../../core/business/country_controller.dart';
 import '../../core/employees/employees_controller.dart';
+import '../../core/organizations/org_controller.dart';
 import '../../core/session/session_controller.dart';
 import '../../core/store/store_profile_controller.dart';
 import '../../core/theme/dukani_theme.dart';
@@ -63,8 +64,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     // returning owner's uid reads as null here, their real store profile
     // never gets fetched, and they get bounced back into store setup as if
     // they were a brand-new signup.
-    final uid = ref.read(authRepositoryProvider).currentUser?.uid;
-    final profile = uid == null ? null : await ref.read(storeRepositoryProvider).fetch(uid);
+    final orgId = await ref.read(currentOrgIdProvider.future);
+    final profile = orgId == null ? null : await ref.read(storeRepositoryProvider).fetch(orgId);
     if (!mounted) return;
     if (profile != null && profile.suspended) {
       await ref.read(authControllerProvider.notifier).signOut();

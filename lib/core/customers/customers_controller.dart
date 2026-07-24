@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/mock/mock_models.dart';
-import '../auth/auth_controller.dart';
+import '../organizations/org_controller.dart';
 import '../offline/firestore_synced_list_notifier.dart';
 import '../offline/local_db.dart';
 
@@ -14,13 +14,13 @@ const referralBonusPoints = 50;
 /// Mutable customer directory. Starts empty — every customer here is one
 /// the merchant actually added, never a demo record.
 class CustomersController extends FirestoreSyncedListNotifier<MockCustomer> {
-  CustomersController(String? ownerUid)
+  CustomersController(String? orgId)
       : super(
           box: LocalDb.customers,
           seed: const [],
           toJson: (c) => c.toJson(),
           fromJson: MockCustomer.fromJson,
-          ownerUid: ownerUid,
+          orgId: orgId,
           collectionName: 'customers',
         );
 
@@ -97,5 +97,5 @@ class CustomersController extends FirestoreSyncedListNotifier<MockCustomer> {
 }
 
 final customersProvider = StateNotifierProvider<CustomersController, List<MockCustomer>>(
-  (ref) => CustomersController(ref.watch(authStateProvider).valueOrNull?.uid),
+  (ref) => CustomersController(ref.watch(currentOrgIdProvider).valueOrNull),
 );

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/mock/mock_models.dart';
-import '../auth/auth_controller.dart';
+import '../organizations/org_controller.dart';
 import '../offline/firestore_synced_list_notifier.dart';
 import '../offline/local_db.dart';
 import '../session/session_controller.dart';
@@ -15,13 +15,13 @@ import 'reason_prompt.dart';
 /// record a real action here; this phase doesn't retrofit every existing
 /// screen to call it, but the seam is ready for that.
 class ActivityLogController extends FirestoreSyncedListNotifier<MockActivityEntry> {
-  ActivityLogController(String? ownerUid)
+  ActivityLogController(String? orgId)
       : super(
           box: LocalDb.activityLog,
           seed: const [],
           toJson: (e) => e.toJson(),
           fromJson: MockActivityEntry.fromJson,
-          ownerUid: ownerUid,
+          orgId: orgId,
           collectionName: 'activityLog',
         );
 
@@ -64,7 +64,7 @@ class ActivityLogController extends FirestoreSyncedListNotifier<MockActivityEntr
 }
 
 final activityLogProvider = StateNotifierProvider<ActivityLogController, List<MockActivityEntry>>(
-  (ref) => ActivityLogController(ref.watch(authStateProvider).valueOrNull?.uid),
+  (ref) => ActivityLogController(ref.watch(currentOrgIdProvider).valueOrNull),
 );
 
 /// Gate for every sensitive delete/edit: prompts for a mandatory reason

@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../auth/auth_controller.dart';
+import '../organizations/org_controller.dart';
 import '../offline/firestore_synced_list_notifier.dart';
 import '../offline/local_db.dart';
 
@@ -71,13 +71,13 @@ class MockPurchaseOrder {
 }
 
 class PurchaseOrdersController extends FirestoreSyncedListNotifier<MockPurchaseOrder> {
-  PurchaseOrdersController(String? ownerUid)
+  PurchaseOrdersController(String? orgId)
       : super(
           box: LocalDb.purchaseOrders,
           seed: const [],
           toJson: (o) => o.toJson(),
           fromJson: MockPurchaseOrder.fromJson,
-          ownerUid: ownerUid,
+          orgId: orgId,
           collectionName: 'purchaseOrders',
         );
 
@@ -89,5 +89,5 @@ class PurchaseOrdersController extends FirestoreSyncedListNotifier<MockPurchaseO
 }
 
 final purchaseOrdersProvider = StateNotifierProvider<PurchaseOrdersController, List<MockPurchaseOrder>>(
-  (ref) => PurchaseOrdersController(ref.watch(authStateProvider).valueOrNull?.uid),
+  (ref) => PurchaseOrdersController(ref.watch(currentOrgIdProvider).valueOrNull),
 );

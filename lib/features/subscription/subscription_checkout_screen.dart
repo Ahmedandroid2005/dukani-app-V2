@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-import '../../core/auth/auth_controller.dart';
+import '../../core/organizations/org_controller.dart';
 import '../../core/subscription/subscription_controller.dart';
 import '../../core/subscription/subscription_repository.dart';
 import '../../core/theme/dukani_theme.dart';
@@ -81,15 +81,15 @@ class _SubscriptionCheckoutScreenState extends ConsumerState<_SubscriptionChecko
 
   Future<void> _waitForConfirmation() async {
     setState(() => _stage = _Stage.confirming);
-    final uid = ref.read(authStateProvider).valueOrNull?.uid;
-    if (uid == null) {
+    final orgId = await ref.read(currentOrgIdProvider.future);
+    if (orgId == null) {
       setState(() => _stage = _Stage.failed);
       return;
     }
     final repo = ref.read(subscriptionRepositoryProvider);
     // Stripe's webhook usually lands within a couple of seconds of the
     // redirect — this gives it a reasonable window before giving up.
-    final confirmed = repo.watchPlan(uid).firstWhere(
+    final confirmed = repo.watchPlan(orgId).firstWhere(
           (plan) => plan == widget.planId,
           orElse: () => null,
         );

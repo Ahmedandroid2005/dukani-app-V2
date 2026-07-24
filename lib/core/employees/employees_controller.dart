@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/mock/mock_models.dart';
-import '../auth/auth_controller.dart';
+import '../organizations/org_controller.dart';
 import '../offline/firestore_synced_list_notifier.dart';
 import '../offline/local_db.dart';
 
@@ -11,8 +11,8 @@ import '../offline/local_db.dart';
 /// preloaded, so there's never a demo account with a guessable password
 /// baked into a fresh install.
 class EmployeesController extends FirestoreSyncedListNotifier<MockEmployee> {
-  EmployeesController(String? ownerUid)
-      : super(box: LocalDb.employees, seed: const [], toJson: (e) => e.toJson(), fromJson: MockEmployee.fromJson, ownerUid: ownerUid, collectionName: 'employees');
+  EmployeesController(String? orgId)
+      : super(box: LocalDb.employees, seed: const [], toJson: (e) => e.toJson(), fromJson: MockEmployee.fromJson, orgId: orgId, collectionName: 'employees');
 
   void add(MockEmployee employee) => state = [...state, employee];
 
@@ -58,5 +58,5 @@ class EmployeesController extends FirestoreSyncedListNotifier<MockEmployee> {
 }
 
 final employeesProvider = StateNotifierProvider<EmployeesController, List<MockEmployee>>(
-  (ref) => EmployeesController(ref.watch(authStateProvider).valueOrNull?.uid),
+  (ref) => EmployeesController(ref.watch(currentOrgIdProvider).valueOrNull),
 );

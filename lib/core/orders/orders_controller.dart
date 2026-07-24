@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../auth/auth_controller.dart';
+import '../organizations/org_controller.dart';
 import '../offline/firestore_synced_list_notifier.dart';
 import '../offline/local_db.dart';
 
@@ -81,8 +81,8 @@ class MockCustomerOrder {
 /// customer picks up — distinct from an immediate POS checkout, which
 /// completes in one pass and never sits in a "قيد التجهيز" state.
 class OrdersController extends FirestoreSyncedListNotifier<MockCustomerOrder> {
-  OrdersController(String? ownerUid)
-      : super(box: LocalDb.orders, seed: const [], toJson: (o) => o.toJson(), fromJson: MockCustomerOrder.fromJson, ownerUid: ownerUid, collectionName: 'orders');
+  OrdersController(String? orgId)
+      : super(box: LocalDb.orders, seed: const [], toJson: (o) => o.toJson(), fromJson: MockCustomerOrder.fromJson, orgId: orgId, collectionName: 'orders');
 
   void create(MockCustomerOrder order) => state = [order, ...state];
 
@@ -98,5 +98,5 @@ class OrdersController extends FirestoreSyncedListNotifier<MockCustomerOrder> {
 }
 
 final ordersProvider = StateNotifierProvider<OrdersController, List<MockCustomerOrder>>(
-  (ref) => OrdersController(ref.watch(authStateProvider).valueOrNull?.uid),
+  (ref) => OrdersController(ref.watch(currentOrgIdProvider).valueOrNull),
 );

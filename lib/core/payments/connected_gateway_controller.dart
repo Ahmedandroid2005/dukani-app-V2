@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../auth/auth_controller.dart';
+import '../firebase_providers.dart';
 import '../offline/local_db.dart';
-import '../store/store_profile_controller.dart' show firestoreProvider;
+import '../organizations/org_controller.dart';
 import 'firestore_gateway_credentials_repository.dart';
 import 'payment_gateway_credentials.dart';
 
@@ -13,14 +13,14 @@ final gatewayCredentialsRepositoryProvider = Provider<GatewayCredentialsReposito
 );
 
 class ConnectedGatewayController extends StateNotifier<ConnectedGateway?> {
-  ConnectedGatewayController(this._ownerUid, this._repository) : super(_read()) {
+  ConnectedGatewayController(this._orgId, this._repository) : super(_read()) {
     // A device that's never connected a gateway locally (e.g. the merchant
     // just signed in on a new phone) still picks up whatever they connected
     // elsewhere, same pull-on-launch pattern as FirestoreSyncedListNotifier.
-    if (_ownerUid != null && state == null) _pullFromCloud();
+    if (_orgId != null && state == null) _pullFromCloud();
   }
 
-  final String? _ownerUid;
+  final String? _orgId;
   final GatewayCredentialsRepository _repository;
 
   static ConnectedGateway? _read() {
@@ -33,7 +33,7 @@ class ConnectedGatewayController extends StateNotifier<ConnectedGateway?> {
 
   Future<void> _pullFromCloud() async {
     try {
-      final cloud = await _repository.fetch(_ownerUid!);
+      final cloud = await _repository.fetch(_orgId!);
       if (cloud == null) return;
       await LocalDb.settings.put('connectedGatewayId', cloud.gatewayId);
       await LocalDb.settings.put('connectedGatewayApiKey', cloud.apiKey);
@@ -55,7 +55,7 @@ class ConnectedGatewayController extends StateNotifier<ConnectedGateway?> {
     }
     final gateway = ConnectedGateway(gatewayId: gatewayId, apiKey: apiKey, extra: extra);
     state = gateway;
-    if (_ownerUid != null) _repository.save(_ownerUid, gateway).catchError((_) {});
+    if (_orgId != null) _repository.save(_orgId, gateway).catchError((_) {});
   }
 
   Future<void> disconnect() async {
@@ -63,13 +63,13 @@ class ConnectedGatewayController extends StateNotifier<ConnectedGateway?> {
     await LocalDb.settings.delete('connectedGatewayApiKey');
     await LocalDb.settings.delete('connectedGatewayExtra');
     state = null;
-    if (_ownerUid != null) _repository.delete(_ownerUid).catchError((_) {});
+    if (_orgId != null) _repository.delete(_orgId).catchError((_) {});
   }
 }
 
 final connectedGatewayProvider = StateNotifierProvider<ConnectedGatewayController, ConnectedGateway?>(
   (ref) => ConnectedGatewayController(
-    ref.watch(authStateProvider).valueOrNull?.uid,
+    ref.watch(currentOrgIdProvider).valueOrNull,
     ref.watch(gatewayCredentialsRepositoryProvider),
   ),
 );

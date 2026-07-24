@@ -8,6 +8,7 @@ import '../../core/auth/auth_controller.dart';
 import '../../core/business/business_type_controller.dart';
 import '../../core/business/country_controller.dart';
 import '../../core/employees/employees_controller.dart';
+import '../../core/organizations/org_controller.dart';
 import '../../core/session/session_controller.dart';
 import '../../core/store/store_profile_controller.dart';
 import '../../core/theme/dukani_theme.dart';
@@ -63,7 +64,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with TickerProvider
     final owner = ref.read(employeesProvider).where((e) => e.role == 'مالك').toList();
     if (owner.isNotEmpty) ref.read(sessionProvider.notifier).login(owner.first);
 
-    final profile = await ref.read(storeRepositoryProvider).fetch(user.uid);
+    final orgId = await ref.read(currentOrgIdProvider.future);
+    final profile = orgId == null ? null : await ref.read(storeRepositoryProvider).fetch(orgId);
     if (!mounted) return;
 
     if (profile != null && profile.suspended) {

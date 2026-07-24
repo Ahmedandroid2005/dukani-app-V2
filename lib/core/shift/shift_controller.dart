@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../auth/auth_controller.dart';
+import '../organizations/org_controller.dart';
 import '../offline/firestore_synced_list_notifier.dart';
 import '../offline/local_db.dart';
 
@@ -92,8 +92,8 @@ class ShiftRecord {
 /// is visible to the Super Admin panel, not just kept in memory for the
 /// current app session.
 class ShiftController extends FirestoreSyncedListNotifier<ShiftRecord> {
-  ShiftController(String? ownerUid)
-      : super(box: LocalDb.shifts, seed: const [], toJson: (s) => s.toJson(), fromJson: ShiftRecord.fromJson, ownerUid: ownerUid, collectionName: 'shifts');
+  ShiftController(String? orgId)
+      : super(box: LocalDb.shifts, seed: const [], toJson: (s) => s.toJson(), fromJson: ShiftRecord.fromJson, orgId: orgId, collectionName: 'shifts');
 
   /// The open shift, if any — always the newest record when it isn't closed.
   ShiftRecord? get current => state.isEmpty || state.first.closed ? null : state.first;
@@ -122,7 +122,7 @@ class ShiftController extends FirestoreSyncedListNotifier<ShiftRecord> {
 }
 
 final shiftProvider = StateNotifierProvider<ShiftController, List<ShiftRecord>>(
-  (ref) => ShiftController(ref.watch(authStateProvider).valueOrNull?.uid),
+  (ref) => ShiftController(ref.watch(currentOrgIdProvider).valueOrNull),
 );
 
 /// The currently open shift, if any — derived so screens can watch a

@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/mock/mock_models.dart';
-import '../auth/auth_controller.dart';
+import '../organizations/org_controller.dart';
 import '../offline/firestore_synced_list_notifier.dart';
 import '../offline/local_db.dart';
 
@@ -11,13 +11,13 @@ import '../offline/local_db.dart';
 /// details; the merchant fills in the real address from the Branches
 /// screen. Every branch after that is one the merchant actually added.
 class BranchesController extends FirestoreSyncedListNotifier<MockBranch> {
-  BranchesController(String? ownerUid)
+  BranchesController(String? orgId)
       : super(
           box: LocalDb.branches,
           seed: const [MockBranch(id: 'br1', name: 'الفرع الرئيسي', isMain: true)],
           toJson: (b) => b.toJson(),
           fromJson: MockBranch.fromJson,
-          ownerUid: ownerUid,
+          orgId: orgId,
           collectionName: 'branches',
         );
 
@@ -50,5 +50,5 @@ class BranchesController extends FirestoreSyncedListNotifier<MockBranch> {
 }
 
 final branchesProvider = StateNotifierProvider<BranchesController, List<MockBranch>>(
-  (ref) => BranchesController(ref.watch(authStateProvider).valueOrNull?.uid),
+  (ref) => BranchesController(ref.watch(currentOrgIdProvider).valueOrNull),
 );

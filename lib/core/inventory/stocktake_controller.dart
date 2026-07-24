@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../auth/auth_controller.dart';
+import '../organizations/org_controller.dart';
 import '../offline/firestore_json.dart';
 import '../offline/firestore_synced_list_notifier.dart';
 import '../offline/local_db.dart';
@@ -42,8 +42,8 @@ class StocktakeRecord {
 }
 
 class StocktakeController extends FirestoreSyncedListNotifier<StocktakeRecord> {
-  StocktakeController(String? ownerUid)
-      : super(box: LocalDb.stocktakes, seed: const [], toJson: (s) => s.toJson(), fromJson: StocktakeRecord.fromJson, ownerUid: ownerUid, collectionName: 'stocktakes');
+  StocktakeController(String? orgId)
+      : super(box: LocalDb.stocktakes, seed: const [], toJson: (s) => s.toJson(), fromJson: StocktakeRecord.fromJson, orgId: orgId, collectionName: 'stocktakes');
 
   void record(List<StocktakeVariance> variances) {
     state = [
@@ -54,5 +54,5 @@ class StocktakeController extends FirestoreSyncedListNotifier<StocktakeRecord> {
 }
 
 final stocktakeProvider = StateNotifierProvider<StocktakeController, List<StocktakeRecord>>(
-  (ref) => StocktakeController(ref.watch(authStateProvider).valueOrNull?.uid),
+  (ref) => StocktakeController(ref.watch(currentOrgIdProvider).valueOrNull),
 );

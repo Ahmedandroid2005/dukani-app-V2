@@ -17,5 +17,5 @@ class SubscriptionException implements Exception {
 /// functions/src/subscription.ts).
 abstract class SubscriptionRepository {
   Future<SubscriptionCheckoutSession> createCheckout(String planId);
-  Stream<String?> watchPlan(String ownerUid);
+  Stream<String?> watchPlan(String orgId);
 }

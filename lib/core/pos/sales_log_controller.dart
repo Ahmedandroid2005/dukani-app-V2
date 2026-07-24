@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../auth/auth_controller.dart';
+import '../organizations/org_controller.dart';
 import '../offline/firestore_json.dart';
 import '../offline/firestore_synced_list_notifier.dart';
 import '../offline/local_db.dart';
@@ -95,12 +95,12 @@ class SaleRecord {
 /// products and selling them visibly moves those numbers, instead of the
 /// reports staying fixed demo figures forever.
 class SalesLogController extends FirestoreSyncedListNotifier<SaleRecord> {
-  SalesLogController(String? ownerUid)
-      : super(box: LocalDb.salesLog, seed: const [], toJson: (s) => s.toJson(), fromJson: SaleRecord.fromJson, ownerUid: ownerUid, collectionName: 'salesLog');
+  SalesLogController(String? orgId)
+      : super(box: LocalDb.salesLog, seed: const [], toJson: (s) => s.toJson(), fromJson: SaleRecord.fromJson, orgId: orgId, collectionName: 'salesLog');
 
   void record(SaleRecord sale) => state = [sale, ...state];
 }
 
 final salesLogProvider = StateNotifierProvider<SalesLogController, List<SaleRecord>>(
-  (ref) => SalesLogController(ref.watch(authStateProvider).valueOrNull?.uid),
+  (ref) => SalesLogController(ref.watch(currentOrgIdProvider).valueOrNull),
 );

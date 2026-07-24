@@ -24,8 +24,8 @@ class FirebaseSubscriptionRepository implements SubscriptionRepository {
   }
 
   @override
-  Stream<String?> watchPlan(String ownerUid) {
-    return _firestore.collection('stores').doc(ownerUid).snapshots().map((snapshot) => snapshot.data()?['plan'] as String?);
+  Stream<String?> watchPlan(String orgId) {
+    return _firestore.collection('organizations').doc(orgId).snapshots().map((snapshot) => snapshot.data()?['plan'] as String?);
   }
 
   String _messageFor(FirebaseFunctionsException e) => switch (e.code) {
