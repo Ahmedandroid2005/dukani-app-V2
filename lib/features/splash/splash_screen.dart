@@ -132,15 +132,23 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with TickerProvider
                         ),
                   ),
                 ),
-                const SizedBox(height: DukaniSpacing.xl),
+                const SizedBox(height: DukaniSpacing.md),
                 FadeTransition(
                   opacity: _taglineFade,
                   child: AnimatedBuilder(
                     animation: _pulse,
-                    builder: (context, _) => CustomPaint(size: const Size(28, 28), painter: _SparkleLoaderPainter(_pulse.value)),
+                    builder: (context, _) => Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        for (var i = 0; i < 3; i++) ...[
+                          if (i > 0) const SizedBox(width: 6),
+                          _PulseDot(delay: i * 0.15, progress: _pulse.value),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
-                const SizedBox(height: DukaniSpacing.xl),
+                const SizedBox(height: DukaniSpacing.md),
                 FadeTransition(
                   opacity: _taglineFade,
                   child: Column(
@@ -148,7 +156,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with TickerProvider
                       Text('نظام كاشير ذكي لإدارة متجرك بسهولة',
                           style: DukaniTypography.textTheme(DukaniColors.ink700).titleMedium),
                       const SizedBox(height: 4),
-                      Text('Smart POS system for easy store management',
+                      Text('Smart POS for modern retail',
                           style: DukaniTypography.textTheme(DukaniColors.ink300).bodySmall),
                     ],
                   ),
@@ -162,38 +170,25 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with TickerProvider
   }
 }
 
-/// A radiating dash-burst loader (matches the brand's splash reference) —
-/// eight short strokes fading in/out around a center point, read as "still
-/// loading" without competing with the static logo above it.
-class _SparkleLoaderPainter extends CustomPainter {
-  _SparkleLoaderPainter(this.progress);
+/// One dot of the three-dot loader row — matches the mockup's `.dotload`
+/// exactly: a small accent-colored circle whose opacity pulses on a phase
+/// offset per dot, so the row reads as a left-to-right ripple.
+class _PulseDot extends StatelessWidget {
+  const _PulseDot({required this.delay, required this.progress});
+  final double delay;
   final double progress;
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final center = size.center(Offset.zero);
-    final outerR = size.width / 2;
-    final innerR = outerR * 0.45;
-    const dashCount = 8;
-
-    for (var i = 0; i < dashCount; i++) {
-      final angle = (i / dashCount) * 2 * math.pi;
-      // Each dash's opacity cycles on a phase offset so the burst reads as
-      // continuous rotating motion rather than a uniform blink.
-      final phase = (progress + i / dashCount) % 1.0;
-      final double opacity = (0.25 + 0.75 * (0.5 + 0.5 * math.sin(phase * 2 * math.pi))).clamp(0.0, 1.0);
-
-      final start = center + Offset(math.cos(angle), math.sin(angle)) * innerR;
-      final end = center + Offset(math.cos(angle), math.sin(angle)) * outerR;
-
-      final paint = Paint()
-        ..color = DukaniColors.gold500.withOpacity(opacity)
-        ..strokeWidth = 2.4
-        ..strokeCap = StrokeCap.round;
-      canvas.drawLine(start, end, paint);
-    }
+  Widget build(BuildContext context) {
+    final phase = (progress + delay) % 1.0;
+    final opacity = (0.25 + 0.75 * (0.5 + 0.5 * math.sin(phase * 2 * math.pi))).clamp(0.0, 1.0);
+    return Opacity(
+      opacity: opacity,
+      child: Container(
+        width: 6,
+        height: 6,
+        decoration: const BoxDecoration(color: DukaniColors.forest700, shape: BoxShape.circle),
+      ),
+    );
   }
-
-  @override
-  bool shouldRepaint(covariant _SparkleLoaderPainter oldDelegate) => oldDelegate.progress != progress;
 }

@@ -102,8 +102,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         const OrDivider(),
         const SizedBox(height: DukaniSpacing.md),
         DukaniSocialButton(provider: DukaniSocialProvider.apple, onPressed: null),
-        const SizedBox(height: DukaniSpacing.sm),
-        DukaniSocialButton(provider: DukaniSocialProvider.google, onPressed: null),
         const SizedBox(height: DukaniSpacing.lg),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,

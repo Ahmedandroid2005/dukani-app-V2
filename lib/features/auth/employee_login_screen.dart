@@ -114,29 +114,71 @@ class _EmployeeLoginScreenState extends ConsumerState<EmployeeLoginScreen> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(DukaniSpacing.lg),
-          child: switch (_step) {
-            _Step.phone => _PhoneStep(
-                controller: _phoneController,
-                error: _phoneError,
-                onContinue: _lookupPhone,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _StepProgress(step: _step),
+              const SizedBox(height: DukaniSpacing.sm),
+              Text(
+                'الجوال ← تأكيد الهوية ← كلمة المرور',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(color: DukaniColors.ink500),
               ),
-            _Step.confirm => _ConfirmStep(
-                employee: _matched!,
-                onConfirm: () => setState(() => _step = _Step.password),
-                onNotMe: _notMe,
+              Expanded(
+                child: switch (_step) {
+                  _Step.phone => _PhoneStep(
+                      controller: _phoneController,
+                      error: _phoneError,
+                      onContinue: _lookupPhone,
+                    ),
+                  _Step.confirm => _ConfirmStep(
+                      employee: _matched!,
+                      onConfirm: () => setState(() => _step = _Step.password),
+                      onNotMe: _notMe,
+                    ),
+                  _Step.password => _PasswordStep(
+                      employee: _matched!,
+                      controller: _passwordController,
+                      obscure: _obscure,
+                      error: _passwordError,
+                      loading: _loading,
+                      onToggleObscure: () => setState(() => _obscure = !_obscure),
+                      onSubmit: _submitPassword,
+                    ),
+                },
               ),
-            _Step.password => _PasswordStep(
-                employee: _matched!,
-                controller: _passwordController,
-                obscure: _obscure,
-                error: _passwordError,
-                loading: _loading,
-                onToggleObscure: () => setState(() => _obscure = !_obscure),
-                onSubmit: _submitPassword,
-              ),
-          },
+            ],
+          ),
         ),
       ),
+    );
+  }
+}
+
+/// Three-segment progress row (phone → confirm → password) — matches the
+/// mockup's step indicator exactly, one dash per stage of the identity flow.
+class _StepProgress extends StatelessWidget {
+  const _StepProgress({required this.step});
+  final _Step step;
+
+  @override
+  Widget build(BuildContext context) {
+    final index = _Step.values.indexOf(step);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        for (var i = 0; i < _Step.values.length; i++) ...[
+          if (i > 0) const SizedBox(width: 6),
+          Container(
+            width: 26,
+            height: 3,
+            decoration: BoxDecoration(
+              color: i == index ? DukaniColors.forest700 : DukaniColors.ink100,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+        ],
+      ],
     );
   }
 }
